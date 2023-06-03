@@ -17,6 +17,7 @@ func _ready():
 	project_dir.open("res://")
 	load_gd_plug()
 	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
+	install_btn.get_popup().connect("index_pressed", self, "_on_install_popup_menu_index_pressed")
 
 func _process(delta):
 	if not is_instance_valid(gd_plug):
@@ -141,6 +142,7 @@ func gd_plug_execute_threaded(name):
 	gd_plug._plug_end()
 	disable_buttons(false)
 	_is_executing = false
+	clear_environment()
 
 	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
 
@@ -158,14 +160,25 @@ func gd_plug_execute(name):
 	gd_plug._plug_end()
 	disable_buttons(false)
 	_is_executing = false
+	clear_environment()
 
 	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
+
+func clear_environment():
+	OS.set_environment("production", "")
+	OS.set_environment("test", "")
+	OS.set_environment("force", "")
 
 func _on_Init_pressed():
 	gd_plug_execute("_plug_init")
 	load_gd_plug()
 
-func _on_InstallBtn_pressed():
+func _on_install_popup_menu_index_pressed(index):
+	match index:
+		1:
+			OS.set_environment("production", "true")
+		2:
+			OS.set_environment("force", "true")
 	gd_plug_execute_threaded("_plug_install")
 
 func _on_UninstallBtn_pressed():
