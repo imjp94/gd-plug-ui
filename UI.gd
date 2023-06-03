@@ -76,20 +76,26 @@ func update_plugin_list(plugged, installed):
 		var is_installed = plugin_name in installed
 		var row = RowScn.instance()
 		plugin_list.add_child(row)
+		
 		row.plugin_name.text = plugin_name
 		row.plugin_name.hint_tooltip = plugin.url
+
 		var stylebox = StyleBoxFlat.new()
-		var bg_color = Color.transparent
-		if is_installed:
-			if is_plugged:
-				bg_color = Color.green
-			else:
-				bg_color = Color.red
-		else:
-			bg_color = Color.orange
-		stylebox.bg_color = bg_color
+		stylebox.bg_color = Color.transparent
 		stylebox.bg_color.a = 0.1
 		row.set("custom_styles/panel", stylebox)
+
+		var color_state = Color.transparent
+		if is_installed:
+			if is_plugged:
+				row.set_plugin_state(2)
+				color_state = Color.green
+			else:
+				row.set_plugin_state(1)
+				color_state = Color.red
+		else:
+			row.set_plugin_state(0)
+			color_state = Color.orange
 		
 		for plugin_arg in plugin.keys():
 			var value = plugin[plugin_arg]
