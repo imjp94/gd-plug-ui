@@ -7,15 +7,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 0.9
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_right = 1024.0
 margin_bottom = 22.0
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer2/HBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
 margin_right = 340.0
 margin_bottom = 22.0
 size_flags_horizontal = 7
@@ -25,7 +25,7 @@ custom_constants/margin_top = 4
 custom_constants/margin_left = 8
 custom_constants/margin_bottom = 4
 
-[node name="Label" type="Label" parent="VBoxContainer2/HBoxContainer/MarginContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MarginContainer"]
 margin_left = 151.0
 margin_top = 4.0
 margin_right = 189.0
@@ -36,7 +36,7 @@ text = "Name"
 align = 1
 valign = 1
 
-[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer2/HBoxContainer"]
+[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
 margin_left = 344.0
 margin_right = 1024.0
 margin_bottom = 22.0
@@ -48,22 +48,33 @@ custom_constants/margin_top = 4
 custom_constants/margin_left = 8
 custom_constants/margin_bottom = 4
 
-[node name="Label2" type="Label" parent="VBoxContainer2/HBoxContainer/MarginContainer2"]
-margin_left = 326.0
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/MarginContainer2"]
+margin_left = 305.0
 margin_top = 4.0
-margin_right = 354.0
+margin_right = 375.0
 margin_bottom = 18.0
 size_flags_horizontal = 6
 size_flags_vertical = 0
-text = "Args"
+text = "Arguments"
 align = 1
 valign = 1
 
-[node name="PluginList" type="VBoxContainer" parent="VBoxContainer2"]
-unique_name_in_owner = true
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
 margin_top = 26.0
 margin_right = 1024.0
-margin_bottom = 26.0
+margin_bottom = 540.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MarginContainer"]
+margin_right = 1024.0
+margin_bottom = 514.0
+scroll_horizontal_enabled = false
+
+[node name="PluginList" type="VBoxContainer" parent="VBoxContainer/MarginContainer/ScrollContainer"]
+unique_name_in_owner = true
+margin_right = 1024.0
+size_flags_horizontal = 3
 custom_constants/separation = 4
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -77,29 +88,31 @@ margin_bottom = 60.0
 
 [node name="InitBtn" type="Button" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 83.0
+margin_left = 109.0
 margin_top = 20.0
-margin_right = 117.0
+margin_right = 143.0
 margin_bottom = 40.0
 size_flags_horizontal = 6
 size_flags_vertical = 4
 text = "Init"
 
-[node name="InstallBtn" type="Button" parent="MarginContainer/HBoxContainer"]
+[node name="InstallBtn" type="OptionButton" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 250.0
+margin_left = 323.0
 margin_top = 20.0
-margin_right = 361.0
+margin_right = 443.0
 margin_bottom = 40.0
 size_flags_horizontal = 6
 size_flags_vertical = 4
-text = "Install / Update"
+text = "Install/Update"
+items = [ "Install/Update", null, false, 1, null, "Install/Update (Production)", null, false, 2, null, "Install/Update (Force)", null, false, 3, null ]
+selected = 0
 
 [node name="UninstallBtn" type="Button" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 477.0
+margin_left = 606.0
 margin_top = 20.0
-margin_right = 546.0
+margin_right = 675.0
 margin_bottom = 40.0
 size_flags_horizontal = 6
 size_flags_vertical = 4
@@ -107,32 +120,14 @@ text = "Uninstall"
 
 [node name="CleanBtn" type="Button" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 693.0
+margin_left = 874.0
 margin_top = 20.0
-margin_right = 740.0
+margin_right = 921.0
 margin_bottom = 40.0
 size_flags_horizontal = 6
 size_flags_vertical = 4
 text = "Clean"
 
-[node name="OptionButton" type="OptionButton" parent="MarginContainer/HBoxContainer"]
-margin_left = 888.0
-margin_top = 20.0
-margin_right = 957.0
-margin_bottom = 40.0
-size_flags_horizontal = 6
-size_flags_vertical = 4
-toggle_mode = false
-action_mode = 1
-text = "Install"
-align = 1
-items = [ "Install", null, false, 0, null, "Install Test", null, false, 1, null, "Install Force", null, false, 2, null ]
-selected = 0
-__meta__ = {
-"_editor_description_": ""
-}
-
 [connection signal="pressed" from="MarginContainer/HBoxContainer/InitBtn" to="." method="_on_Init_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/InstallBtn" to="." method="_on_InstallBtn_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/UninstallBtn" to="." method="_on_UninstallBtn_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/CleanBtn" to="." method="_on_CleanBtn_pressed"]
