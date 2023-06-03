@@ -2,7 +2,7 @@ extends Control
 const TagScn = preload("Tag.tscn")
 
 enum PLUGIN_STATE {
-	PLUGGED, UNPLUGGED, INSTALLED
+	PLUGGED, UNPLUGGED, INSTALLED, CHANGED, UPDATE
 }
 
 onready var plugin_name = $"%PluginName"
@@ -22,13 +22,19 @@ func set_plugin_state(state):
 	match state:
 		PLUGIN_STATE.PLUGGED:
 			color = Color.orange
-			tooltip = "Plugged, pending to install"
+			tooltip = "Plugged"
 		PLUGIN_STATE.UNPLUGGED:
 			color = Color.red
-			tooltip = "Unplugged, pending to update"
+			tooltip = "Unplugged"
 		PLUGIN_STATE.INSTALLED:
 			color = Color.green
 			tooltip = "Installed"
+		PLUGIN_STATE.CHANGED:
+			color = Color.yellow
+			tooltip = "Changed"
+		PLUGIN_STATE.UPDATE:
+			color = Color.blue
+			tooltip = "Outdated"
 	color.a = 0.1
 	set_plugin_state_color(color)
 	plugin_state.hint_tooltip = tooltip

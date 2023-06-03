@@ -65,9 +65,14 @@ func update_plugin_list(plugged, installed):
 	for child in plugin_list.get_children():
 		child.queue_free()
 	for plugin_name in plugin_names:
-		var plugin = plugged.get(plugin_name) if plugin_name in plugged else installed.get(plugin_name)
+		var plugin_plugged = plugged.get(plugin_name)
+		var plugin_installed = installed.get(plugin_name)
+		var plugin = plugin_plugged if plugin_name in plugged else plugin_installed
+		
 		var is_plugged = plugin_name in plugged
 		var is_installed = plugin_name in installed
+		var changes = gd_plug.compare_plugins(plugin_plugged, plugin_installed) if is_installed else {}
+		var is_changed = changes.size() > 0
 		var row = RowScn.instance()
 		plugin_list.add_child(row)
 
@@ -79,17 +84,16 @@ func update_plugin_list(plugged, installed):
 		stylebox.bg_color.a = 0.1
 		row.set("custom_styles/panel", stylebox)
 
-		var color_state = Color.transparent
 		if is_installed:
 			if is_plugged:
-				row.set_plugin_state(2)
-				color_state = Color.green
+				if is_changed:
+					row.set_plugin_state(3)
+				else:
+					row.set_plugin_state(2)
 			else:
 				row.set_plugin_state(1)
-				color_state = Color.red
 		else:
 			row.set_plugin_state(0)
-			color_state = Color.orange
 		
 		for plugin_arg in plugin.keys():
 			var value = plugin[plugin_arg]
