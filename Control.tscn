@@ -16,7 +16,7 @@ margin_right = 1024.0
 margin_bottom = 22.0
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
-margin_right = 340.0
+margin_right = 312.0
 margin_bottom = 22.0
 size_flags_horizontal = 7
 size_flags_vertical = 0
@@ -26,9 +26,9 @@ custom_constants/margin_left = 8
 custom_constants/margin_bottom = 4
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MarginContainer"]
-margin_left = 151.0
+margin_left = 137.0
 margin_top = 4.0
-margin_right = 189.0
+margin_right = 175.0
 margin_bottom = 18.0
 size_flags_horizontal = 6
 size_flags_vertical = 0
@@ -37,8 +37,8 @@ align = 1
 valign = 1
 
 [node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
-margin_left = 344.0
-margin_right = 1024.0
+margin_left = 316.0
+margin_right = 941.0
 margin_bottom = 22.0
 size_flags_horizontal = 7
 size_flags_vertical = 0
@@ -49,13 +49,36 @@ custom_constants/margin_left = 8
 custom_constants/margin_bottom = 4
 
 [node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/MarginContainer2"]
-margin_left = 305.0
+margin_left = 277.0
 margin_top = 4.0
-margin_right = 375.0
+margin_right = 347.0
 margin_bottom = 18.0
 size_flags_horizontal = 6
 size_flags_vertical = 0
 text = "Arguments"
+align = 1
+valign = 1
+
+[node name="MarginContainer3" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
+margin_left = 945.0
+margin_right = 1024.0
+margin_bottom = 22.0
+size_flags_horizontal = 7
+size_flags_vertical = 0
+size_flags_stretch_ratio = 0.25
+custom_constants/margin_right = 8
+custom_constants/margin_top = 4
+custom_constants/margin_left = 8
+custom_constants/margin_bottom = 4
+
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/MarginContainer3"]
+margin_left = 23.0
+margin_top = 4.0
+margin_right = 55.0
+margin_bottom = 18.0
+size_flags_horizontal = 6
+size_flags_vertical = 0
+text = "State"
 align = 1
 valign = 1
 
