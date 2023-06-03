@@ -3,9 +3,7 @@ const RowScn = preload("res://Row.tscn")
 
 onready var plugin_list = $"%PluginList"
 onready var init_btn = $"%InitBtn"
-onready var install_btn = $"%InstallBtn"
-onready var uninstall_btn = $"%UninstallBtn"
-onready var clean_btn = $"%CleanBtn"
+onready var update_btn = $"%UpdateBtn"
 
 var gd_plug
 var project_dir = Directory.new()
@@ -17,7 +15,7 @@ func _ready():
 	project_dir.open("res://")
 	load_gd_plug()
 	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
-	install_btn.get_popup().connect("index_pressed", self, "_on_install_popup_menu_index_pressed")
+	update_btn.get_popup().connect("index_pressed", self, "_on_update_popup_menu_index_pressed")
 
 func _process(delta):
 	if not is_instance_valid(gd_plug):
@@ -39,9 +37,7 @@ func load_gd_plug():
 		gd_plug.free() # Free instance in order to reload script
 	if project_dir.file_exists("plug.gd"):
 		init_btn.hide()
-		install_btn.show()
-		uninstall_btn.show()
-		clean_btn.show()
+		update_btn.show()
 
 		var gd_plug_script = load("plug.gd")
 		gd_plug_script.reload() # Reload gd-plug script to get updated
@@ -51,9 +47,7 @@ func load_gd_plug():
 	else:
 		if project_dir.file_exists("addons/gd-plug/plug.gd"):
 			init_btn.show()
-			install_btn.hide()
-			uninstall_btn.hide()
-			clean_btn.hide()
+			update_btn.hide()
 			
 			gd_plug = load("addons/gd-plug/plug.gd").new()
 		else:
@@ -76,7 +70,7 @@ func update_plugin_list(plugged, installed):
 		var is_installed = plugin_name in installed
 		var row = RowScn.instance()
 		plugin_list.add_child(row)
-		
+
 		row.plugin_name.text = plugin_name
 		row.plugin_name.hint_tooltip = plugin.url
 
@@ -124,9 +118,7 @@ func update_plugin_list(plugged, installed):
 
 func disable_buttons(disabled=true):
 	init_btn.disabled = disabled
-	install_btn.disabled = disabled
-	uninstall_btn.disabled = disabled
-	clean_btn.disabled = disabled
+	update_btn.disabled = disabled
 
 func gd_plug_execute_threaded(name):
 	if not is_instance_valid(gd_plug):
@@ -179,19 +171,13 @@ func _on_Init_pressed():
 	gd_plug_execute("_plug_init")
 	load_gd_plug()
 
-func _on_install_popup_menu_index_pressed(index):
+func _on_update_popup_menu_index_pressed(index):
 	match index:
 		1:
 			OS.set_environment("production", "true")
 		2:
 			OS.set_environment("force", "true")
 	gd_plug_execute_threaded("_plug_install")
-
-func _on_UninstallBtn_pressed():
-	gd_plug_execute_threaded("_plug_uninstall")
-
-func _on_CleanBtn_pressed():
-	gd_plug_execute("_plug_clean")
 
 func get_plugged_plugins():
 	return gd_plug._plugged_plugins if is_instance_valid(gd_plug) else {}

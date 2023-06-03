@@ -88,46 +88,24 @@ margin_bottom = 60.0
 
 [node name="InitBtn" type="Button" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 109.0
+margin_left = 238.0
 margin_top = 20.0
-margin_right = 143.0
+margin_right = 272.0
 margin_bottom = 40.0
 size_flags_horizontal = 6
 size_flags_vertical = 4
 text = "Init"
 
-[node name="InstallBtn" type="OptionButton" parent="MarginContainer/HBoxContainer"]
+[node name="UpdateBtn" type="OptionButton" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 323.0
+margin_left = 731.0
 margin_top = 20.0
-margin_right = 443.0
+margin_right = 806.0
 margin_bottom = 40.0
 size_flags_horizontal = 6
 size_flags_vertical = 4
-text = "Install/Update"
-items = [ "Install/Update", null, false, 1, null, "Install/Update (Production)", null, false, 2, null, "Install/Update (Force)", null, false, 3, null ]
+text = "Update"
+items = [ "Update", null, false, 1, null, "Update (Production)", null, false, 2, null, "Update (Force)", null, false, 3, null ]
 selected = 0
 
-[node name="UninstallBtn" type="Button" parent="MarginContainer/HBoxContainer"]
-unique_name_in_owner = true
-margin_left = 606.0
-margin_top = 20.0
-margin_right = 675.0
-margin_bottom = 40.0
-size_flags_horizontal = 6
-size_flags_vertical = 4
-text = "Uninstall"
-
-[node name="CleanBtn" type="Button" parent="MarginContainer/HBoxContainer"]
-unique_name_in_owner = true
-margin_left = 874.0
-margin_top = 20.0
-margin_right = 921.0
-margin_bottom = 40.0
-size_flags_horizontal = 6
-size_flags_vertical = 4
-text = "Clean"
-
 [connection signal="pressed" from="MarginContainer/HBoxContainer/InitBtn" to="." method="_on_Init_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/UninstallBtn" to="." method="_on_UninstallBtn_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/CleanBtn" to="." method="_on_CleanBtn_pressed"]
