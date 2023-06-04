@@ -92,6 +92,16 @@ __meta__ = {
 "_editor_description_": ""
 }
 
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+anchor_left = 0.402344
+anchor_top = 0.441667
+anchor_right = 0.597656
+anchor_bottom = 0.558333
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
 [connection signal="pressed" from="MarginContainer/HBoxContainer/InitBtn" to="." method="_on_Init_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/CheckForUpdateBtn" to="." method="_on_CheckForUpdateBtn_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/HBoxContainer/UpdateBtn" to="." method="_on_UpdateBtn_pressed"]

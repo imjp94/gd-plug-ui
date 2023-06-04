@@ -9,6 +9,7 @@ const PLUGIN_STATE_COLOR = [
 ]
 
 onready var tree = $Tree
+onready var confirmation_dialog = $"%ConfirmationDialog"
 onready var init_btn = $"%InitBtn"
 onready var check_for_update_btn = $"%CheckForUpdateBtn"
 onready var force_check = $"%ForceCheck"
@@ -30,7 +31,6 @@ func _ready():
 	tree.set_column_title(0, "Name")
 	tree.set_column_title(1, "Arguments")
 	tree.set_column_title(2, "Status")
-	tree_root = tree.create_item()
 
 func _process(delta):
 	if not is_instance_valid(gd_plug):
@@ -193,6 +193,8 @@ func clear_environment():
 func _on_Init_pressed():
 	gd_plug_execute("_plug_init")
 	load_gd_plug()
+	confirmation_dialog.dialog_text = "Added plug.gd to project"
+	confirmation_dialog.popup_centered()
 
 func _on_CheckForUpdateBtn_pressed():
 	var installed_plugins = get_installed_plugins()
@@ -208,12 +210,17 @@ func _on_CheckForUpdateBtn_pressed():
 		
 		disable_buttons(false)
 
+	confirmation_dialog.dialog_text = "Finished checking updates"
+	confirmation_dialog.popup_centered()
+
 func _on_UpdateBtn_pressed():
 	if force_check.pressed:
 		OS.set_environment("force", "true")
 	if production_check.pressed:
 		OS.set_environment("production", "true")
 	gd_plug_execute_threaded("_plug_install")
+	confirmation_dialog.dialog_text = "Finished updating plugins"
+	confirmation_dialog.popup_centered()
 
 func get_plugged_plugins():
 	return gd_plug._plugged_plugins if is_instance_valid(gd_plug) else {}
