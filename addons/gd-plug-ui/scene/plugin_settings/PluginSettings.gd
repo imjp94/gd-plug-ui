@@ -12,13 +12,13 @@ onready var tree = $Tree
 onready var confirmation_dialog = $"%ConfirmationDialog"
 onready var init_btn = $"%InitBtn"
 onready var check_for_update_btn = $"%CheckForUpdateBtn"
+onready var update_section = $"%UpdateSection"
 onready var force_check = $"%ForceCheck"
 onready var production_check = $"%ProductionCheck"
 onready var update_btn = $"%UpdateBtn"
 
 var gd_plug
 var project_dir = Directory.new()
-var tree_root
 
 var _is_executing = false
 
@@ -52,7 +52,9 @@ func load_gd_plug():
 		gd_plug.free() # Free instance in order to reload script
 	if project_dir.file_exists("plug.gd"):
 		init_btn.hide()
-		update_btn.show()
+		check_for_update_btn.show()
+		update_section.show()
+		update_btn.show() # Not sure why it is always hidden
 
 		var gd_plug_script = load("plug.gd")
 		gd_plug_script.reload() # Reload gd-plug script to get updated
@@ -62,7 +64,8 @@ func load_gd_plug():
 	else:
 		if project_dir.file_exists("addons/gd-plug/plug.gd"):
 			init_btn.show()
-			update_btn.hide()
+			check_for_update_btn.hide()
+			update_section.hide()
 			
 			gd_plug = load("addons/gd-plug/plug.gd").new()
 		else:
@@ -78,7 +81,7 @@ func update_plugin_list(plugged, installed):
 		plugin_names.append(plugin_name)
 
 	tree.clear()
-	tree_root = tree.create_item()
+	tree.create_item() # root
 	for plugin_name in plugin_names:
 		var plugin_plugged = plugged.get(plugin_name, {})
 		var plugin_installed = installed.get(plugin_name, {})
@@ -127,7 +130,7 @@ func update_plugin_list(plugged, installed):
 					plugin_args.append("on_updated: %s" % str(value))
 		var plugin_args_text = str(plugin_args).trim_prefix("[").trim_suffix("]")
 
-		var child = tree.create_item(tree_root)
+		var child = tree.create_item(tree.get_root())
 		child.set_text_align(0, TreeItem.ALIGN_LEFT)
 		child.set_text_align(1, TreeItem.ALIGN_CENTER)
 		child.set_text_align(2, TreeItem.ALIGN_CENTER)

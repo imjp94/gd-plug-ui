@@ -34,10 +34,11 @@ margin_bottom = 52.0
 [node name="InitBtn" type="Button" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 visible = false
+margin_left = 479.0
 margin_top = 12.0
-margin_right = 34.0
+margin_right = 513.0
 margin_bottom = 32.0
-size_flags_horizontal = 2
+size_flags_horizontal = 6
 size_flags_vertical = 4
 text = "Init"
 
@@ -50,7 +51,8 @@ size_flags_horizontal = 2
 size_flags_vertical = 4
 text = "Check for Update"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer"]
+[node name="UpdateSection" type="HBoxContainer" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
 margin_left = 662.0
 margin_top = 2.0
 margin_right = 992.0
@@ -58,7 +60,7 @@ margin_bottom = 42.0
 size_flags_horizontal = 10
 size_flags_vertical = 6
 
-[node name="ForceCheck" type="CheckButton" parent="MarginContainer/HBoxContainer/HBoxContainer"]
+[node name="ForceCheck" type="CheckButton" parent="MarginContainer/HBoxContainer/UpdateSection"]
 unique_name_in_owner = true
 margin_right = 115.0
 margin_bottom = 40.0
@@ -68,7 +70,7 @@ size_flags_vertical = 4
 custom_styles/focus = SubResource( 1 )
 text = "Force"
 
-[node name="ProductionCheck" type="CheckButton" parent="MarginContainer/HBoxContainer/HBoxContainer"]
+[node name="ProductionCheck" type="CheckButton" parent="MarginContainer/HBoxContainer/UpdateSection"]
 unique_name_in_owner = true
 margin_left = 119.0
 margin_right = 268.0
@@ -79,7 +81,7 @@ size_flags_vertical = 4
 custom_styles/focus = SubResource( 1 )
 text = "Production"
 
-[node name="UpdateBtn" type="Button" parent="MarginContainer/HBoxContainer/HBoxContainer"]
+[node name="UpdateBtn" type="Button" parent="MarginContainer/HBoxContainer/UpdateSection"]
 unique_name_in_owner = true
 margin_left = 272.0
 margin_top = 10.0
@@ -104,4 +106,4 @@ __meta__ = {
 
 [connection signal="pressed" from="MarginContainer/HBoxContainer/InitBtn" to="." method="_on_Init_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/CheckForUpdateBtn" to="." method="_on_CheckForUpdateBtn_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/HBoxContainer/UpdateBtn" to="." method="_on_UpdateBtn_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/UpdateSection/UpdateBtn" to="." method="_on_UpdateBtn_pressed"]
