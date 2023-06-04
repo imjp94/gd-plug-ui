@@ -32,17 +32,21 @@ func _ready():
 	tree.set_column_title(1, "Arguments")
 	tree.set_column_title(2, "Status")
 
+	connect("visibility_changed", self, "_on_visibility_changed")
+
 func _process(delta):
 	if not is_instance_valid(gd_plug):
 		return
 	
-	gd_plug.threadpool.process(delta)
+	if "threadpool" in gd_plug:
+		gd_plug.threadpool.process(delta)
 
 func _notification(what):
 	match what:
 		NOTIFICATION_PREDELETE:
 			if is_instance_valid(gd_plug):
 				gd_plug.threadpool.stop()
+				gd_plug.free()
 		NOTIFICATION_WM_FOCUS_IN:
 			load_gd_plug()
 			update_plugin_list(get_plugged_plugins(), get_installed_plugins())
@@ -192,6 +196,11 @@ func clear_environment():
 	OS.set_environment("production", "")
 	OS.set_environment("test", "")
 	OS.set_environment("force", "")
+
+func _on_visibility_changed():
+	if visible:
+		load_gd_plug()
+		update_plugin_list(get_plugged_plugins(), get_installed_plugins())
 
 func _on_Init_pressed():
 	gd_plug_execute("_plug_init")
