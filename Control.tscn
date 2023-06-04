@@ -2,7 +2,7 @@
 
 [ext_resource path="res://UI.gd" type="Script" id=1]
 
-[node name="UI" type="Control"]
+[node name="gd-plug" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
@@ -16,7 +16,7 @@ margin_right = 1024.0
 margin_bottom = 22.0
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
-margin_right = 312.0
+margin_right = 322.0
 margin_bottom = 22.0
 size_flags_horizontal = 7
 size_flags_vertical = 0
@@ -26,9 +26,9 @@ custom_constants/margin_left = 8
 custom_constants/margin_bottom = 4
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MarginContainer"]
-margin_left = 137.0
+margin_left = 142.0
 margin_top = 4.0
-margin_right = 175.0
+margin_right = 180.0
 margin_bottom = 18.0
 size_flags_horizontal = 6
 size_flags_vertical = 0
@@ -37,8 +37,8 @@ align = 1
 valign = 1
 
 [node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
-margin_left = 316.0
-margin_right = 941.0
+margin_left = 326.0
+margin_right = 971.0
 margin_bottom = 22.0
 size_flags_horizontal = 7
 size_flags_vertical = 0
@@ -49,9 +49,9 @@ custom_constants/margin_left = 8
 custom_constants/margin_bottom = 4
 
 [node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/MarginContainer2"]
-margin_left = 277.0
+margin_left = 287.0
 margin_top = 4.0
-margin_right = 347.0
+margin_right = 357.0
 margin_bottom = 18.0
 size_flags_horizontal = 6
 size_flags_vertical = 0
@@ -60,21 +60,21 @@ align = 1
 valign = 1
 
 [node name="MarginContainer3" type="MarginContainer" parent="VBoxContainer/HBoxContainer"]
-margin_left = 945.0
-margin_right = 1024.0
+margin_left = 975.0
+margin_right = 1023.0
 margin_bottom = 22.0
 size_flags_horizontal = 7
 size_flags_vertical = 0
-size_flags_stretch_ratio = 0.25
+size_flags_stretch_ratio = 0.0
 custom_constants/margin_right = 8
 custom_constants/margin_top = 4
 custom_constants/margin_left = 8
 custom_constants/margin_bottom = 4
 
 [node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/MarginContainer3"]
-margin_left = 23.0
+margin_left = 8.0
 margin_top = 4.0
-margin_right = 55.0
+margin_right = 40.0
 margin_bottom = 18.0
 size_flags_horizontal = 6
 size_flags_vertical = 0
@@ -97,6 +97,7 @@ scroll_horizontal_enabled = false
 [node name="PluginList" type="VBoxContainer" parent="VBoxContainer/MarginContainer/ScrollContainer"]
 unique_name_in_owner = true
 margin_right = 1024.0
+margin_bottom = 98.0
 size_flags_horizontal = 3
 custom_constants/separation = 4
 
@@ -111,6 +112,7 @@ margin_bottom = 60.0
 
 [node name="InitBtn" type="Button" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
+visible = false
 margin_left = 238.0
 margin_top = 20.0
 margin_right = 272.0
@@ -121,9 +123,9 @@ text = "Init"
 
 [node name="UpdateBtn" type="OptionButton" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 731.0
+margin_left = 474.0
 margin_top = 20.0
-margin_right = 806.0
+margin_right = 549.0
 margin_bottom = 40.0
 size_flags_horizontal = 6
 size_flags_vertical = 4
