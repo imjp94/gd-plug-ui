@@ -11,7 +11,7 @@ config_version=4
 [application]
 
 config/name="gd-plug-ui"
-run/main_scene="res://Control.tscn"
+run/main_scene="res://addons/gd-plug-ui/scene/plugin_settings/PluginSettings.tscn"
 config/icon="res://icon.png"
 
 [gui]

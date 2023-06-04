@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Tag.gd" type="Script" id=1]
+[ext_resource path="res://addons/gd-plug-ui/scene/plugin_settings/Tag.gd" type="Script" id=1]
 
 [sub_resource type="StyleBoxFlat" id=3]
 content_margin_left = 8.0

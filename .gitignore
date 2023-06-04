@@ -15,3 +15,11 @@ data_*/
 
 # gd-plug
 .plugged/
+
+
+
+# Exception
+!addons/
+# gd-plug-ui
+addons/*
+!addons/gd-plug-ui

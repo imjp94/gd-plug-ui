@@ -1,6 +1,6 @@
 tool
 extends Control
-const RowScn = preload("res://Row.tscn")
+const RowScn = preload("PluginRow.tscn")
 
 onready var plugin_list = $"%PluginList"
 onready var init_btn = $"%InitBtn"
