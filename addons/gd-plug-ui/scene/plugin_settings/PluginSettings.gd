@@ -1,13 +1,20 @@
 tool
 extends Control
-const RowScn = preload("PluginRow.tscn")
 
-onready var plugin_list = $"%PluginList"
+enum PLUGIN_STATE {
+	PLUGGED, UNPLUGGED, INSTALLED, CHANGED, UPDATE
+}
+const PLUGIN_STATE_COLOR = [
+	Color.orange, Color.red, Color.green, Color.yellow, Color.blue
+]
+
+onready var tree = $Tree
 onready var init_btn = $"%InitBtn"
 onready var update_btn = $"%UpdateBtn"
 
 var gd_plug
 var project_dir = Directory.new()
+var tree_root
 
 var _is_executing = false
 
@@ -17,6 +24,11 @@ func _ready():
 	load_gd_plug()
 	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
 	update_btn.get_popup().connect("index_pressed", self, "_on_update_popup_menu_index_pressed")
+
+	tree.set_column_title(0, "Name")
+	tree.set_column_title(1, "Arguments")
+	tree.set_column_title(2, "Status")
+	tree_root = tree.create_item()
 
 func _process(delta):
 	if not is_instance_valid(gd_plug):
@@ -63,39 +75,30 @@ func update_plugin_list(plugged, installed):
 			continue
 		plugin_names.append(plugin_name)
 
-	for child in plugin_list.get_children():
-		child.queue_free()
+	tree.clear()
 	for plugin_name in plugin_names:
-		var plugin_plugged = plugged.get(plugin_name)
-		var plugin_installed = installed.get(plugin_name)
+		var plugin_plugged = plugged.get(plugin_name, {})
+		var plugin_installed = installed.get(plugin_name, {})
 		var plugin = plugin_plugged if plugin_name in plugged else plugin_installed
 		
 		var is_plugged = plugin_name in plugged
 		var is_installed = plugin_name in installed
 		var changes = gd_plug.compare_plugins(plugin_plugged, plugin_installed) if is_installed else {}
 		var is_changed = changes.size() > 0
-		var row = RowScn.instance()
-		plugin_list.add_child(row)
 
-		row.plugin_name.text = plugin_name
-		row.plugin_name.hint_tooltip = plugin.url
-
-		var stylebox = StyleBoxFlat.new()
-		stylebox.bg_color = Color.transparent
-		stylebox.bg_color.a = 0.1
-		row.set("custom_styles/panel", stylebox)
-
+		var plugin_status = 0
 		if is_installed:
 			if is_plugged:
 				if is_changed:
-					row.set_plugin_state(3)
+					plugin_status = 3
 				else:
-					row.set_plugin_state(2)
+					plugin_status = 2
 			else:
-				row.set_plugin_state(1)
+				plugin_status = 1
 		else:
-			row.set_plugin_state(0)
+			plugin_status = 0
 		
+		var plugin_args = []
 		for plugin_arg in plugin.keys():
 			var value = plugin[plugin_arg]
 			if not value:
@@ -103,23 +106,33 @@ func update_plugin_list(plugged, installed):
 
 			match plugin_arg:
 				"install_root":
-					row.add_tag("install root: %s" % str(value))
+					plugin_args.append("install root: %s" % str(value))
 				"include":
-					row.add_tag("include %s" % str(value))
+					plugin_args.append("include %s" % str(value))
 				"exclude":
-					row.add_tag("exclude %s" % str(value))
+					plugin_args.append("exclude %s" % str(value))
 				"branch":
-					row.add_tag("branch: %s" % str(value))
+					plugin_args.append("branch: %s" % str(value))
 				"tag":
-					row.add_tag("tag: %s" % str(value))
+					plugin_args.append("tag: %s" % str(value))
 				"commit":
-					var tag = row.add_tag(str(value).left(8))
-					tag.hint_tooltip = str(value)
+					plugin_args.append(str(value).left(8))
 				"dev":
 					if value:
-						row.add_tag("dev")
+						plugin_args.append("dev")
 				"on_updated":
-					row.add_tag("on_updated: %s" % str(value))
+					plugin_args.append("on_updated: %s" % str(value))
+		var plugin_args_text = str(plugin_args).trim_prefix("[").trim_suffix("]")
+
+		var child = tree.create_item(tree_root)
+		child.set_text_align(0, TreeItem.ALIGN_LEFT)
+		child.set_text_align(1, TreeItem.ALIGN_CENTER)
+		child.set_text_align(2, TreeItem.ALIGN_CENTER)
+		child.set_text(0, plugin_name)
+		child.set_tooltip(0, plugin.url)
+		child.set_text(1, plugin_args_text)
+		child.set_text(2, PLUGIN_STATE.keys()[plugin_status])
+		child.set_custom_color(2, PLUGIN_STATE_COLOR[plugin_status])
 
 func disable_buttons(disabled=true):
 	init_btn.disabled = disabled
