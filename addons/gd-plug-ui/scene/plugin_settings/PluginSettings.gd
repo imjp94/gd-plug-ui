@@ -10,6 +10,8 @@ const PLUGIN_STATE_COLOR = [
 
 onready var tree = $Tree
 onready var init_btn = $"%InitBtn"
+onready var force_check = $"%ForceCheck"
+onready var production_check = $"%ProductionCheck"
 onready var update_btn = $"%UpdateBtn"
 
 var gd_plug
@@ -23,7 +25,6 @@ func _ready():
 	project_dir.open("res://")
 	load_gd_plug()
 	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
-	update_btn.get_popup().connect("index_pressed", self, "_on_update_popup_menu_index_pressed")
 
 	tree.set_column_title(0, "Name")
 	tree.set_column_title(1, "Arguments")
@@ -76,6 +77,7 @@ func update_plugin_list(plugged, installed):
 		plugin_names.append(plugin_name)
 
 	tree.clear()
+	tree_root = tree.create_item()
 	for plugin_name in plugin_names:
 		var plugin_plugged = plugged.get(plugin_name, {})
 		var plugin_installed = installed.get(plugin_name, {})
@@ -189,12 +191,11 @@ func _on_Init_pressed():
 	gd_plug_execute("_plug_init")
 	load_gd_plug()
 
-func _on_update_popup_menu_index_pressed(index):
-	match index:
-		1:
-			OS.set_environment("production", "true")
-		2:
-			OS.set_environment("force", "true")
+func _on_UpdateBtn_pressed():
+	if force_check.pressed:
+		OS.set_environment("force", "true")
+	if production_check.pressed:
+		OS.set_environment("production", "true")
 	gd_plug_execute_threaded("_plug_install")
 
 func get_plugged_plugins():
