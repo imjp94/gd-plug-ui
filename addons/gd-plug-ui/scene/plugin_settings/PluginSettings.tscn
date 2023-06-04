@@ -41,6 +41,15 @@ size_flags_horizontal = 2
 size_flags_vertical = 4
 text = "Init"
 
+[node name="CheckForUpdateBtn" type="Button" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+margin_top = 12.0
+margin_right = 121.0
+margin_bottom = 32.0
+size_flags_horizontal = 2
+size_flags_vertical = 4
+text = "Check for Update"
+
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer"]
 margin_left = 662.0
 margin_top = 2.0
@@ -84,4 +93,5 @@ __meta__ = {
 }
 
 [connection signal="pressed" from="MarginContainer/HBoxContainer/InitBtn" to="." method="_on_Init_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/CheckForUpdateBtn" to="." method="_on_CheckForUpdateBtn_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/HBoxContainer/UpdateBtn" to="." method="_on_UpdateBtn_pressed"]

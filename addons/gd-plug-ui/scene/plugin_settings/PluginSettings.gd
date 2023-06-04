@@ -10,6 +10,7 @@ const PLUGIN_STATE_COLOR = [
 
 onready var tree = $Tree
 onready var init_btn = $"%InitBtn"
+onready var check_for_update_btn = $"%CheckForUpdateBtn"
 onready var force_check = $"%ForceCheck"
 onready var production_check = $"%ProductionCheck"
 onready var update_btn = $"%UpdateBtn"
@@ -130,6 +131,7 @@ func update_plugin_list(plugged, installed):
 		child.set_text_align(0, TreeItem.ALIGN_LEFT)
 		child.set_text_align(1, TreeItem.ALIGN_CENTER)
 		child.set_text_align(2, TreeItem.ALIGN_CENTER)
+		child.set_meta("plugin", plugin)
 		child.set_text(0, plugin_name)
 		child.set_tooltip(0, plugin.url)
 		child.set_text(1, plugin_args_text)
@@ -138,6 +140,7 @@ func update_plugin_list(plugged, installed):
 
 func disable_buttons(disabled=true):
 	init_btn.disabled = disabled
+	check_for_update_btn.disabled = disabled
 	update_btn.disabled = disabled
 
 func gd_plug_execute_threaded(name):
@@ -191,6 +194,20 @@ func _on_Init_pressed():
 	gd_plug_execute("_plug_init")
 	load_gd_plug()
 
+func _on_CheckForUpdateBtn_pressed():
+	var installed_plugins = get_installed_plugins()
+	var first_child = tree.get_root().get_children()
+	if first_child:
+		gd_plug.threadpool.enqueue_task(self, "check_for_update", first_child)
+		disable_buttons(true)
+
+		while true:
+			if gd_plug.threadpool.is_all_thread_finished():
+				break
+			yield(get_tree(), "idle_frame")
+		
+		disable_buttons(false)
+
 func _on_UpdateBtn_pressed():
 	if force_check.pressed:
 		OS.set_environment("force", "true")
@@ -203,3 +220,31 @@ func get_plugged_plugins():
 
 func get_installed_plugins():
 	return gd_plug.installation_config.get_value("plugin", "installed", {}) if is_instance_valid(gd_plug) else {}
+
+func has_update(plugin):
+	if not is_instance_valid(gd_plug):
+		return false
+	if not plugin:
+		return false
+	var git = gd_plug._GitExecutable.new(ProjectSettings.globalize_path(plugin.plug_dir), gd_plug.logger)
+
+	var ahead_behind = []
+	if git.fetch("origin " + plugin.branch if plugin.branch else "origin").exit == OK:
+		ahead_behind = git.get_commit_comparison("HEAD", "origin/" + plugin.branch if plugin.branch else "origin")
+	var is_commit_behind = !!ahead_behind[1] if ahead_behind.size() == 2 else false
+	if is_commit_behind:
+		gd_plug.logger.info("%s %d commits behind, update required" % [plugin.name, ahead_behind[1]])
+		return true
+	else:
+		gd_plug.logger.info("%s up to date" % plugin.name)
+		return false
+
+func check_for_update(child):
+	var plugin = child.get_meta("plugin")
+	var has_update = has_update(plugin)
+	if has_update: # TODO: !!!
+		child.set_text(2, PLUGIN_STATE.keys()[PLUGIN_STATE.UPDATE])
+		child.set_custom_color(2, PLUGIN_STATE_COLOR[PLUGIN_STATE.UPDATE])
+	var next_child = child.get_next()
+	if next_child:
+		check_for_update(next_child)
