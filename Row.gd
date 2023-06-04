@@ -1,3 +1,4 @@
+tool
 extends Control
 const TagScn = preload("Tag.tscn")
 

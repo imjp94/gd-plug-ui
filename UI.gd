@@ -1,3 +1,4 @@
+tool
 extends Control
 const RowScn = preload("res://Row.tscn")
 
