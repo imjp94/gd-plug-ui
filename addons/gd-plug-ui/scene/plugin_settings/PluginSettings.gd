@@ -1,11 +1,13 @@
 tool
 extends Control
 
-enum PLUGIN_STATE {
+enum PLUGIN_STATUS {
 	PLUGGED, UNPLUGGED, INSTALLED, CHANGED, UPDATE
 }
-const PLUGIN_STATE_COLOR = [
-	Color.orange, Color.red, Color.green, Color.yellow, Color.blue
+const PLUGIN_STATUS_ICON = [
+	preload("../../assets/icons/add.png"), preload("../../assets/icons/import_fail.png"), 
+	preload("../../assets/icons/import_check.png"), preload("../../assets/icons/edit_internal.png"), 
+	preload("../../assets/icons/refresh.png")
 ]
 
 onready var tree = $Tree
@@ -90,23 +92,7 @@ func update_plugin_list(plugged, installed):
 		var plugin_plugged = plugged.get(plugin_name, {})
 		var plugin_installed = installed.get(plugin_name, {})
 		var plugin = plugin_plugged if plugin_name in plugged else plugin_installed
-		
-		var is_plugged = plugin_name in plugged
-		var is_installed = plugin_name in installed
-		var changes = gd_plug.compare_plugins(plugin_plugged, plugin_installed) if is_installed else {}
-		var is_changed = changes.size() > 0
-
-		var plugin_status = 0
-		if is_installed:
-			if is_plugged:
-				if is_changed:
-					plugin_status = 3
-				else:
-					plugin_status = 2
-			else:
-				plugin_status = 1
-		else:
-			plugin_status = 0
+		var plugin_status = get_plugin_status(plugin_name)
 		
 		var plugin_args = []
 		for plugin_arg in plugin.keys():
@@ -142,8 +128,8 @@ func update_plugin_list(plugged, installed):
 		child.set_text(0, plugin_name)
 		child.set_tooltip(0, plugin.url)
 		child.set_text(1, plugin_args_text)
-		child.set_text(2, PLUGIN_STATE.keys()[plugin_status])
-		child.set_custom_color(2, PLUGIN_STATE_COLOR[plugin_status])
+		child.set_tooltip(2, PLUGIN_STATUS.keys()[plugin_status].capitalize())
+		child.set_icon(2, PLUGIN_STATUS_ICON[plugin_status])
 
 func disable_buttons(disabled=true):
 	init_btn.disabled = disabled
@@ -209,7 +195,6 @@ func _on_Init_pressed():
 	confirmation_dialog.popup_centered()
 
 func _on_CheckForUpdateBtn_pressed():
-	var installed_plugins = get_installed_plugins()
 	var first_child = tree.get_root().get_children()
 	if first_child:
 		gd_plug.threadpool.enqueue_task(self, "check_for_update", first_child)
@@ -240,6 +225,32 @@ func get_plugged_plugins():
 func get_installed_plugins():
 	return gd_plug.installation_config.get_value("plugin", "installed", {}) if is_instance_valid(gd_plug) else {}
 
+func get_plugin_status(plugin_name):
+	var plugged_plugins = get_plugged_plugins()
+	var installed_plugins = get_installed_plugins()
+	var plugin_plugged = plugged_plugins.get(plugin_name, {})
+	var plugin_installed = installed_plugins.get(plugin_name, {})
+	var plugin = plugin_plugged if plugin_name in plugged_plugins else plugin_installed
+
+	var is_plugged = plugin.name in plugged_plugins
+	var is_installed = plugin.name in installed_plugins
+	var changes = gd_plug.compare_plugins(plugin_plugged, plugin_installed) if is_installed else {}
+	var is_changed = changes.size() > 0
+
+	var plugin_status = 0
+	if is_installed:
+		if is_plugged:
+			if is_changed:
+				plugin_status = 3
+			else:
+				plugin_status = 2
+		else:
+			plugin_status = 1
+	else:
+		plugin_status = 0
+
+	return plugin_status
+
 func has_update(plugin):
 	if not is_instance_valid(gd_plug):
 		return false
@@ -260,10 +271,12 @@ func has_update(plugin):
 
 func check_for_update(child):
 	var plugin = child.get_meta("plugin")
-	var has_update = has_update(plugin)
-	if has_update: # TODO: !!!
-		child.set_text(2, PLUGIN_STATE.keys()[PLUGIN_STATE.UPDATE])
-		child.set_custom_color(2, PLUGIN_STATE_COLOR[PLUGIN_STATE.UPDATE])
+	var plugin_status = get_plugin_status(plugin.name)
+	if plugin_status == PLUGIN_STATUS.INSTALLED:
+		var has_update = has_update(plugin)
+		if has_update:
+			child.set_icon(2, PLUGIN_STATUS_ICON[PLUGIN_STATUS.UPDATE])
+			child.set_tooltip(2, PLUGIN_STATUS.keys()[PLUGIN_STATUS.UPDATE].capitalize())
 	var next_child = child.get_next()
 	if next_child:
 		check_for_update(next_child)
