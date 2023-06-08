@@ -1,4 +1,4 @@
-tool
+@tool
 extends Control
 
 enum PLUGIN_STATUS {
@@ -10,23 +10,23 @@ const PLUGIN_STATUS_ICON = [
 	preload("../../assets/icons/refresh.png")
 ]
 
-onready var tree = $Tree
-onready var confirmation_dialog = $"%ConfirmationDialog"
-onready var init_btn = $"%InitBtn"
-onready var check_for_update_btn = $"%CheckForUpdateBtn"
-onready var update_section = $"%UpdateSection"
-onready var force_check = $"%ForceCheck"
-onready var production_check = $"%ProductionCheck"
-onready var update_btn = $"%UpdateBtn"
+@onready var tree = $Tree
+@onready var confirmation_dialog = $"%ConfirmationDialog"
+@onready var init_btn = $"%InitBtn"
+@onready var check_for_update_btn = $"%CheckForUpdateBtn"
+@onready var update_section = $"%UpdateSection"
+@onready var force_check = $"%ForceCheck"
+@onready var production_check = $"%ProductionCheck"
+@onready var update_btn = $"%UpdateBtn"
 
 var gd_plug
-var project_dir = Directory.new()
+var project_dir
 
 var _is_executing = false
 
 
 func _ready():
-	project_dir.open("res://")
+	project_dir = DirAccess.open("res://")
 	load_gd_plug()
 	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
 
@@ -34,7 +34,7 @@ func _ready():
 	tree.set_column_title(1, "Arguments")
 	tree.set_column_title(2, "Status")
 
-	connect("visibility_changed", self, "_on_visibility_changed")
+	connect("visibility_changed", _on_visibility_changed)
 
 func _process(delta):
 	if not is_instance_valid(gd_plug):
@@ -49,7 +49,7 @@ func _notification(what):
 			if is_instance_valid(gd_plug):
 				gd_plug.threadpool.stop()
 				gd_plug.free()
-		NOTIFICATION_WM_FOCUS_IN:
+		NOTIFICATION_APPLICATION_FOCUS_IN:
 			load_gd_plug()
 			update_plugin_list(get_plugged_plugins(), get_installed_plugins())
 
@@ -97,7 +97,12 @@ func update_plugin_list(plugged, installed):
 		var plugin_args = []
 		for plugin_arg in plugin.keys():
 			var value = plugin[plugin_arg]
-			if not value:
+			
+			if value != null:
+				if not (value is bool):
+					if value.is_empty():
+						continue
+			else:
 				continue
 
 			match plugin_arg:
@@ -118,17 +123,23 @@ func update_plugin_list(plugged, installed):
 						plugin_args.append("dev")
 				"on_updated":
 					plugin_args.append("on_updated: %s" % str(value))
-		var plugin_args_text = str(plugin_args).trim_prefix("[").trim_suffix("]")
-
+		
+		var plugin_args_text = ""
+		for i in plugin_args.size():
+			var text = plugin_args[i]
+			plugin_args_text += text
+			if i < plugin_args.size() - 1:
+				plugin_args_text += ", "
+		
 		var child = tree.create_item(tree.get_root())
-		child.set_text_align(0, TreeItem.ALIGN_LEFT)
-		child.set_text_align(1, TreeItem.ALIGN_CENTER)
-		child.set_text_align(2, TreeItem.ALIGN_CENTER)
+		child.set_text_alignment(0, HORIZONTAL_ALIGNMENT_LEFT)
+		child.set_text_alignment(1, HORIZONTAL_ALIGNMENT_CENTER)
+		child.set_text_alignment(2, HORIZONTAL_ALIGNMENT_CENTER)
 		child.set_meta("plugin", plugin)
 		child.set_text(0, plugin_name)
-		child.set_tooltip(0, plugin.url)
+		child.set_tooltip_text(0, plugin.url)
 		child.set_text(1, plugin_args_text)
-		child.set_tooltip(2, PLUGIN_STATUS.keys()[plugin_status].capitalize())
+		child.set_tooltip_text(2, PLUGIN_STATUS.keys()[plugin_status].capitalize())
 		child.set_icon(2, PLUGIN_STATUS_ICON[plugin_status])
 
 func disable_buttons(disabled=true):
@@ -148,10 +159,7 @@ func gd_plug_execute_threaded(name):
 	gd_plug._plugging()
 	gd_plug.call(name)
 	
-	while true:
-		if gd_plug.threadpool.is_all_thread_finished():
-			break
-		yield(get_tree(), "idle_frame")
+	await gd_plug.threadpool.all_thread_finished
 
 	gd_plug._plug_end()
 	disable_buttons(false)
@@ -195,18 +203,14 @@ func _on_Init_pressed():
 	confirmation_dialog.popup_centered()
 
 func _on_CheckForUpdateBtn_pressed():
-	var first_child = tree.get_root().get_children()
-	if first_child:
-		gd_plug.threadpool.enqueue_task(self, "check_for_update", first_child)
+	var children = tree.get_root().get_children()
+	if tree.get_root().get_children().size() > 0:
+		gd_plug.threadpool.enqueue_task(check_for_update.bind(children[0]))
 		disable_buttons(true)
 
-		while true:
-			if gd_plug.threadpool.is_all_thread_finished():
-				break
-			yield(get_tree(), "idle_frame")
-		
-		disable_buttons(false)
-
+		await gd_plug.threadpool.all_thread_finished
+	
+	disable_buttons(false)
 	confirmation_dialog.dialog_text = "Finished checking updates"
 	confirmation_dialog.popup_centered()
 
@@ -216,6 +220,9 @@ func _on_UpdateBtn_pressed():
 	if production_check.pressed:
 		OS.set_environment("production", "true")
 	gd_plug_execute_threaded("_plug_install")
+
+	await gd_plug.threadpool.all_thread_finished
+
 	confirmation_dialog.dialog_text = "Finished updating plugins"
 	confirmation_dialog.popup_centered()
 
@@ -254,7 +261,7 @@ func get_plugin_status(plugin_name):
 func has_update(plugin):
 	if not is_instance_valid(gd_plug):
 		return false
-	if not plugin:
+	if plugin == null:
 		return false
 	var git = gd_plug._GitExecutable.new(ProjectSettings.globalize_path(plugin.plug_dir), gd_plug.logger)
 
@@ -276,7 +283,7 @@ func check_for_update(child):
 		var has_update = has_update(plugin)
 		if has_update:
 			child.set_icon(2, PLUGIN_STATUS_ICON[PLUGIN_STATUS.UPDATE])
-			child.set_tooltip(2, PLUGIN_STATUS.keys()[PLUGIN_STATUS.UPDATE].capitalize())
+			child.set_tooltip_text(2, PLUGIN_STATUS.keys()[PLUGIN_STATUS.UPDATE].capitalize())
 	var next_child = child.get_next()
 	if next_child:
 		check_for_update(next_child)

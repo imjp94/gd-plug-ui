@@ -1,9 +1,9 @@
-tool
+@tool
 extends EditorPlugin
 
 const UI = preload("res://addons/gd-plug-ui/scene/plugin_settings/PluginSettings.tscn")
 
-var control = UI.instance()
+var control = UI.instantiate()
 
 func _enter_tree():
 	add_control_to_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, control)
