@@ -18,6 +18,8 @@ onready var update_section = $"%UpdateSection"
 onready var force_check = $"%ForceCheck"
 onready var production_check = $"%ProductionCheck"
 onready var update_btn = $"%UpdateBtn"
+onready var loading_overlay = $"%LoadingOverlay"
+onready var loading_label = $"%LoadingLabel"
 
 var gd_plug
 var project_dir = Directory.new()
@@ -131,10 +133,12 @@ func update_plugin_list(plugged, installed):
 		child.set_tooltip(2, PLUGIN_STATUS.keys()[plugin_status].capitalize())
 		child.set_icon(2, PLUGIN_STATUS_ICON[plugin_status])
 
-func disable_buttons(disabled=true):
+func disable_ui(disabled=true, text=""):
 	init_btn.disabled = disabled
 	check_for_update_btn.disabled = disabled
 	update_btn.disabled = disabled
+	loading_overlay.visible = disabled
+	loading_label.text = text
 
 func gd_plug_execute_threaded(name):
 	if not is_instance_valid(gd_plug):
@@ -143,18 +147,15 @@ func gd_plug_execute_threaded(name):
 		return
 	
 	_is_executing = true
-	disable_buttons(true)
+	disable_ui(true, "Updating..." if name == "_plug_install" else "Loading...")
 	gd_plug._plug_start()
 	gd_plug._plugging()
 	gd_plug.call(name)
 	
-	while true:
-		if gd_plug.threadpool.is_all_thread_finished():
-			break
-		yield(get_tree(), "idle_frame")
+	yield(gd_plug.threadpool, "all_thread_finished")
 
 	gd_plug._plug_end()
-	disable_buttons(false)
+	disable_ui(false)
 	_is_executing = false
 	clear_environment()
 
@@ -167,12 +168,12 @@ func gd_plug_execute(name):
 		return
 	
 	_is_executing = true
-	disable_buttons(true)
+	disable_ui(true, "Updating..." if name == "_plug_install" else "Loading...")
 	gd_plug._plug_start()
 	gd_plug._plugging()
 	gd_plug.call(name)
 	gd_plug._plug_end()
-	disable_buttons(false)
+	disable_ui(false)
 	_is_executing = false
 	clear_environment()
 
@@ -198,14 +199,11 @@ func _on_CheckForUpdateBtn_pressed():
 	var first_child = tree.get_root().get_children()
 	if first_child:
 		gd_plug.threadpool.enqueue_task(self, "check_for_update", first_child)
-		disable_buttons(true)
+		disable_ui(true, "Checking for updates...")
 
-		while true:
-			if gd_plug.threadpool.is_all_thread_finished():
-				break
-			yield(get_tree(), "idle_frame")
+		yield(gd_plug.threadpool, "all_thread_finished")
 		
-		disable_buttons(false)
+		disable_ui(false)
 
 	confirmation_dialog.dialog_text = "Finished checking updates"
 	confirmation_dialog.popup_centered()
@@ -216,6 +214,9 @@ func _on_UpdateBtn_pressed():
 	if production_check.pressed:
 		OS.set_environment("production", "true")
 	gd_plug_execute_threaded("_plug_install")
+	
+	yield(gd_plug.threadpool, "all_thread_finished")
+
 	confirmation_dialog.dialog_text = "Finished updating plugins"
 	confirmation_dialog.popup_centered()
 
