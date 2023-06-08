@@ -18,6 +18,8 @@ const PLUGIN_STATUS_ICON = [
 @onready var force_check = $"%ForceCheck"
 @onready var production_check = $"%ProductionCheck"
 @onready var update_btn = $"%UpdateBtn"
+@onready var loading_overlay = $"%LoadingOverlay"
+@onready var loading_label = $"%LoadingLabel"
 
 var gd_plug
 var project_dir
@@ -142,10 +144,12 @@ func update_plugin_list(plugged, installed):
 		child.set_tooltip_text(2, PLUGIN_STATUS.keys()[plugin_status].capitalize())
 		child.set_icon(2, PLUGIN_STATUS_ICON[plugin_status])
 
-func disable_buttons(disabled=true):
+func disable_ui(disabled=true, text=""):
 	init_btn.disabled = disabled
 	check_for_update_btn.disabled = disabled
 	update_btn.disabled = disabled
+	loading_overlay.visible = disabled
+	loading_label.text = text
 
 func gd_plug_execute_threaded(name):
 	if not is_instance_valid(gd_plug):
@@ -154,7 +158,7 @@ func gd_plug_execute_threaded(name):
 		return
 	
 	_is_executing = true
-	disable_buttons(true)
+	disable_ui(true, "Updating..." if name == "_plug_install" else "Loading...")
 	gd_plug._plug_start()
 	gd_plug._plugging()
 	gd_plug.call(name)
@@ -162,7 +166,7 @@ func gd_plug_execute_threaded(name):
 	await gd_plug.threadpool.all_thread_finished
 
 	gd_plug._plug_end()
-	disable_buttons(false)
+	disable_ui(false)
 	_is_executing = false
 	clear_environment()
 
@@ -175,12 +179,12 @@ func gd_plug_execute(name):
 		return
 	
 	_is_executing = true
-	disable_buttons(true)
+	disable_ui(true, "Updating..." if name == "_plug_install" else "Loading...")
 	gd_plug._plug_start()
 	gd_plug._plugging()
 	gd_plug.call(name)
 	gd_plug._plug_end()
-	disable_buttons(false)
+	disable_ui(false)
 	_is_executing = false
 	clear_environment()
 
@@ -206,11 +210,11 @@ func _on_CheckForUpdateBtn_pressed():
 	var children = tree.get_root().get_children()
 	if tree.get_root().get_children().size() > 0:
 		gd_plug.threadpool.enqueue_task(check_for_update.bind(children[0]))
-		disable_buttons(true)
+		disable_ui(true)
 
 		await gd_plug.threadpool.all_thread_finished
 	
-	disable_buttons(false)
+	disable_ui(false)
 	confirmation_dialog.dialog_text = "Finished checking updates"
 	confirmation_dialog.popup_centered()
 
