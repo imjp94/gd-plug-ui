@@ -1,6 +1,7 @@
 tool
 extends Control
 
+signal gd_plug_loaded(gd_plug)
 signal updated()
 
 enum PLUGIN_STATUS {
@@ -79,6 +80,9 @@ func load_gd_plug():
 			gd_plug = load("addons/gd-plug/plug.gd").new()
 		else:
 			print("Missing dependency: gd-plug")
+
+	if is_instance_valid(gd_plug):
+		emit_signal("gd_plug_loaded", gd_plug)
 
 func update_plugin_list(plugged, installed):
 	var plugin_names = []
