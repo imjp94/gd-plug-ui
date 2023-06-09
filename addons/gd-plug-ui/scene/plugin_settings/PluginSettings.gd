@@ -1,6 +1,8 @@
 @tool
 extends Control
 
+signal updated()
+
 enum PLUGIN_STATUS {
 	PLUGGED, UNPLUGGED, INSTALLED, CHANGED, UPDATE
 }
@@ -229,6 +231,7 @@ func _on_UpdateBtn_pressed():
 
 	confirmation_dialog.dialog_text = "Finished updating plugins"
 	confirmation_dialog.popup_centered()
+	emit_signal("updated")
 
 func get_plugged_plugins():
 	return gd_plug._plugged_plugins if is_instance_valid(gd_plug) else {}
