@@ -81,9 +81,6 @@ size_flags_horizontal = 10
 size_flags_vertical = 4
 text = "Update"
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
-unique_name_in_owner = true
-
 [node name="LoadingOverlay" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 visible = false
