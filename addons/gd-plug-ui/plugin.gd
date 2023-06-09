@@ -1,27 +1,27 @@
 @tool
 extends EditorPlugin
 const Utils = preload("Utils.gd")
-const UI = preload("res://addons/gd-plug-ui/scene/plugin_settings/PluginSettings.tscn")
+const PluginSettings = preload("scene/plugin_settings/PluginSettings.tscn")
 
 var plugin_config = ConfigFile.new()
-var control = UI.instantiate()
+var plugin_settings = PluginSettings.instantiate()
 var plugins_tab
 var plugins_tab_update_btn
 
 
 func _enter_tree():
-	add_control_to_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, control)
-	control.connect("updated", self, "_on_control_updated")
-	control.connect("gd_plug_loaded", self, "_on_control_gd_plug_loaded")
-	var tab_container = control.get_parent()
+	add_control_to_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, plugin_settings)
+	plugin_settings.connect("updated", self, "_on_plugin_settings_updated")
+	plugin_settings.connect("gd_plug_loaded", self, "_on_plugin_settings_gd_plug_loaded")
+	var tab_container = plugin_settings.get_parent()
 	for child in tab_container.get_children():
 		if child.name == "Plugins":
 			plugins_tab = child
 			break
 	if plugins_tab:
-		tab_container.move_child(control, plugins_tab.get_index())
+		tab_container.move_child(plugin_settings, plugins_tab.get_index())
 	else:
-		tab_container.move_child(control, tab_container.get_child_count()-1)
+		tab_container.move_child(plugin_settings, tab_container.get_child_count()-1)
 
 	for child in plugins_tab.get_children():
 		if child is HBoxContainer:
@@ -31,18 +31,18 @@ func _enter_tree():
 						plugins_tab_update_btn = grandchild
 						plugins_tab_update_btn.connect("pressed", self, "_on_plugins_tab_update_btn_pressed")
 						break
-	control.load_gd_plug()
+	plugin_settings.load_gd_plug()
 
-func _on_control_gd_plug_loaded(gd_plug):
+func _on_plugin_settings_gd_plug_loaded(gd_plug):
 	check_compatibility(gd_plug.VERSION)
 
-func _on_control_updated():
+func _on_plugin_settings_updated():
 	plugins_tab_update_btn.emit_signal("pressed") # Programmatically press update button in "Plugins" tab
 
 func _exit_tree():
-	if is_instance_valid(control):
-		remove_control_from_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, control)
-		control.queue_free()
+	if is_instance_valid(plugin_settings):
+		remove_control_from_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, plugin_settings)
+		plugin_settings.queue_free()
 
 func check_compatibility(gd_plug_version):
 	plugin_config.load("res://addons/gd-plug-ui/plugin.cfg")
@@ -71,6 +71,6 @@ func check_compatibility(gd_plug_version):
 		await dialog.confirmed
 
 		dialog.queue_free()
-		if is_instance_valid(control):
-			remove_control_from_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, control)
-			control.queue_free()
+		if is_instance_valid(plugin_settings):
+			remove_control_from_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, plugin_settings)
+			plugin_settings.queue_free()
