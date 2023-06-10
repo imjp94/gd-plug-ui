@@ -11,8 +11,8 @@ var plugins_tab_update_btn
 
 func _enter_tree():
 	add_control_to_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, plugin_settings)
-	plugin_settings.connect("updated", self, "_on_plugin_settings_updated")
-	plugin_settings.connect("gd_plug_loaded", self, "_on_plugin_settings_gd_plug_loaded")
+	plugin_settings.connect("updated", _on_plugin_settings_updated)
+	plugin_settings.connect("gd_plug_loaded", _on_plugin_settings_gd_plug_loaded)
 	var tab_container = plugin_settings.get_parent()
 	for child in tab_container.get_children():
 		if child.name == "Plugins":
