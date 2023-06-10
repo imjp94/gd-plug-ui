@@ -198,9 +198,9 @@ func gd_plug_execute(name):
 	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
 
 func clear_environment():
-	OS.set_environment("production", "")
-	OS.set_environment("test", "")
-	OS.set_environment("force", "")
+	OS.unset_environment("production")
+	OS.unset_environment("test")
+	OS.unset_environment("force")
 
 func _on_visibility_changed():
 	if visible:
