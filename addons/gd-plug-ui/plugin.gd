@@ -50,6 +50,8 @@ func check_compatibility(gd_plug_version):
 	var later_or_equal = ""
 	var before = ""
 	match gd_plug_ui_version:
+		"0.2.0":
+			later_or_equal = "0.2.2"
 		"0.1.0":
 			later_or_equal = "0.1.3"
 			before = "0.2.0"
@@ -63,9 +65,10 @@ func check_compatibility(gd_plug_version):
 		var dialog = AcceptDialog.new()
 		var text = "gd-plug-ui(%s) is not compatible with " % gd_plug_ui_version
 		text += "current gd-plug(%s), " % gd_plug_version
-		text += "expected >=%s" % later_or_equal if before.empty() else " expected >=%s or %s<" % [later_or_equal, before]
+		text += "expected >=%s" % later_or_equal if before.length() == 0 else " expected >=%s or %s<" % [later_or_equal, before]
 		dialog.dialog_text = text
-		add_control_to_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, dialog)
+		plugin_settings.add_child(dialog)
+		# add_control_to_container(EditorPlugin.CONTAINER_PROJECT_SETTING_TAB_LEFT, dialog)
 		dialog.popup_centered()
 
 		await dialog.confirmed
