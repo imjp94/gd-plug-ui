@@ -4,7 +4,7 @@ static func expected_version(current, later_or_equal, before=""):
 	if not is_expected:
 		return is_expected
 	
-	if not before.empty():
+	if before.length() > 0:
 		is_expected = compare_version_string(current, before) < 0
 	
 	return is_expected
