@@ -67,7 +67,7 @@ func load_gd_plug():
 		update_btn.show() # Not sure why it is always hidden
 
 		var gd_plug_script = load("plug.gd")
-		gd_plug_script.reload() # Reload gd-plug script to get updated
+		gd_plug_script.reload(true) # Reload gd-plug script to get updated
 		gd_plug = gd_plug_script.new()
 		gd_plug._plug_start()
 		gd_plug._plugging()
