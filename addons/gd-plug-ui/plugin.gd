@@ -51,7 +51,7 @@ func check_compatibility(gd_plug_version):
 	var before = ""
 	match gd_plug_ui_version:
 		"0.1.0":
-			later_or_equal = "0.1.3"
+			later_or_equal = "0.1.4"
 			before = "0.2.0"
 		"0.0.0":
 			print("Failed to read gd-plug-ui version string")
