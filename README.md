@@ -18,7 +18,7 @@ Download this repository, move `addons` to your `{project_dir}`
 
 [gd-plug and git](https://github.com/imjp94/gd-plug#installation)
 
-> Make sure to update gd-plug to at least 0.2.3(godot4) or 0.1.3(godot3)
+> Make sure to update gd-plug to at least 0.2.5(godot4) or 0.1.4(godot3)
 
 ## Getting Started
 
