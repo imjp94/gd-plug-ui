@@ -27,6 +27,7 @@ var gd_plug
 var project_dir
 
 var _is_executing = false
+var _check_for_update_task_id = -1
 
 
 func _ready():
@@ -46,6 +47,12 @@ func _process(delta):
 	
 	if "threadpool" in gd_plug:
 		gd_plug.threadpool.process(delta)
+
+	if _check_for_update_task_id >= 0:
+		if WorkerThreadPool.is_task_completed(_check_for_update_task_id):
+			_check_for_update_task_id = -1
+			show_overlay(false)
+			disable_ui(false)
 
 func _notification(what):
 	match what:
@@ -171,13 +178,14 @@ func gd_plug_execute_threaded(name):
 	gd_plug.call(name)
 	
 	await gd_plug.threadpool.all_thread_finished
-
+	
+	# Make sure to use call_deferred for thread safe function calling while waiting thread to finish
 	gd_plug._plug_end()
-	disable_ui(false)
+	call_deferred("disable_ui", false)
 	_is_executing = false
 	clear_environment()
 
-	update_plugin_list(get_plugged_plugins(), get_installed_plugins())
+	call_deferred("update_plugin_list", get_plugged_plugins(), get_installed_plugins())
 
 func gd_plug_execute(name):
 	if not is_instance_valid(gd_plug):
@@ -214,14 +222,11 @@ func _on_Init_pressed():
 func _on_CheckForUpdateBtn_pressed():
 	var children = tree.get_root().get_children()
 	if tree.get_root().get_children().size() > 0:
-		show_overlay(true, "Updating...")
-		gd_plug.threadpool.enqueue_task(check_for_update.bind(children[0]))
+		show_overlay(true, "Checking for Updates...")
 		disable_ui(true)
-
-		await gd_plug.threadpool.all_thread_finished
-	
-	disable_ui(false)
-	show_overlay(false)
+		if _check_for_update_task_id < 0:
+			var task_id = WorkerThreadPool.add_task(check_for_update.bind(children[0]))
+			_check_for_update_task_id = (task_id)
 
 func _on_UpdateBtn_pressed():
 	if force_check.pressed:
@@ -232,9 +237,10 @@ func _on_UpdateBtn_pressed():
 	gd_plug_execute_threaded("_plug_install")
 
 	await gd_plug.threadpool.all_thread_finished
-
-	show_overlay(false)
-	emit_signal("updated")
+	
+	# Make sure to use call_deferred for thread safe function calling while waiting thread to finish
+	call_deferred("show_overlay", false)
+	call_deferred("emit_signal", "updated")
 
 func get_plugged_plugins():
 	return gd_plug._plugged_plugins if is_instance_valid(gd_plug) else {}
@@ -294,6 +300,7 @@ func check_for_update(child):
 		if has_update:
 			child.set_icon(2, PLUGIN_STATUS_ICON[PLUGIN_STATUS.UPDATE])
 			child.set_tooltip_text(2, PLUGIN_STATUS.keys()[PLUGIN_STATUS.UPDATE].capitalize())
-	var next_child = child.get_next()
-	if next_child:
-		check_for_update(next_child)
+	if is_instance_valid(child):
+		var next_child = child.get_next()
+		if next_child:
+			check_for_update(next_child)

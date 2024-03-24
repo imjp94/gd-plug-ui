@@ -37,7 +37,8 @@ func _on_plugin_settings_gd_plug_loaded(gd_plug):
 	check_compatibility(gd_plug.VERSION)
 
 func _on_plugin_settings_updated():
-	plugins_tab_update_btn.emit_signal("pressed") # Programmatically press update button in "Plugins" tab
+	if plugins_tab_update_btn:
+		plugins_tab_update_btn.emit_signal("pressed") # Programmatically press update button in "Plugins" tab
 
 func _exit_tree():
 	if is_instance_valid(plugin_settings):
