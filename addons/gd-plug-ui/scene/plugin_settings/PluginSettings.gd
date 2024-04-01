@@ -229,9 +229,9 @@ func _on_CheckForUpdateBtn_pressed():
 			_check_for_update_task_id = (task_id)
 
 func _on_UpdateBtn_pressed():
-	if force_check.pressed:
+	if force_check.button_pressed:
 		OS.set_environment("force", "true")
-	if production_check.pressed:
+	if production_check.button_pressed:
 		OS.set_environment("production", "true")
 	show_overlay(true, "Updating...")
 	gd_plug_execute_threaded("_plug_install")
